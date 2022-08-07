@@ -3,7 +3,7 @@
   hosts: clickhouse
   handlers:
     - name: Start clickhouse service
-      become: true
+      #become: true
       ansible.builtin.service:
         name: clickhouse-server
         state: restarted
@@ -20,7 +20,7 @@
             url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
             dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
     - name: Install clickhouse packages
-      become: true
+      #become: true
       ansible.builtin.yum:
         name:
           - clickhouse-client-{{ clickhouse_version }}.rpm
