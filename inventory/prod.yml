@@ -8,11 +8,21 @@
 #    epd27euhm7guopu9tjeq:
 #      ansible_host: 130.193.52.169
 
+#clickhouse:
+#  hosts:
+#    srv-clickhouse:
+#      ansible_connection: docker
+#vector:
+#  hosts:
+#    srv-vector:
+#      ansible_connection: docker
+
 clickhouse:
   hosts:
-    srv-clickhouse:
+    u-clickhouse:
       ansible_connection: docker
 vector:
   hosts:
-    srv-vector:
+    u-vector:
       ansible_connection: docker
+

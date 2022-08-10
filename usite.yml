@@ -1,0 +1,35 @@
+---
+- name: Install Clickhouse
+  hosts: clickhouse
+  handlers:
+    - name: Start clickhouse service
+      #become: true
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+  tasks:
+    - block:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/deb/pool/stable/{{ item }}_{{ clickhouse_version }}_all.deb"
+            dest: "/tmp/{{ item }}-{{ clickhouse_version }}.deb"
+          with_items: "{{ clickhouse_packages }}"
+      rescue:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/deb/pool/stable/clickhouse-common-static_{{ clickhouse_version }}_amd64.deb"
+            dest: "/tmp/clickhouse-common-static-{{ clickhouse_version }}.deb"
+    - name: Install clickhouse packages
+      #become: true
+      ansible.builtin.apt:
+        deb: "{{ item }}"
+      with_items:
+        - /tmp/clickhouse-common-static-{{ clickhouse_version }}.deb
+        - /tmp/clickhouse-server-{{ clickhouse_version }}.deb
+        - /tmp/clickhouse-client-{{ clickhouse_version }}.deb
+      notify: Start clickhouse service
+    - name: Create database
+      ansible.builtin.command: "clickhouse-client -q 'create database logs;'"
+      register: create_db
+      failed_when: create_db.rc != 0 and create_db.rc !=82
+      changed_when: create_db.rc == 0
